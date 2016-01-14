@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Media Canvas</title>
+  <script src="./src/main.js"></script>
+</head>
+
+<body>
+  <!-- Then manipulate image data and present it here! -->
+  <canvas class="render"></canvas>
+
+	<script>
+
+		var MC = new MediaCanvas(document.body.querySelector('.render'));
+		MC.addPass(MC.blurStackBox);
+
+		var img = new Image();
+		var src = img;
+
+		src.onload = function() {
+			MC.setSize(src.width, src.height);
+
+			MC.render(src);
+
+		}
+
+		src.src = './jake.png';
+
+		// var video = document.createElement('video');
+		// video.autoplay = true;
+		// video.loop = true;
+		//
+		// var src = video;
+		// src.src = './light-face.webm';
+		//
+		// document.body.appendChild(video);
+		// video.play();
+		// video.style.display = 'none';
+		//
+		// MC.setSize(440, 248);
+		//
+		// (function render() {
+		//
+		// 	window.requestAnimationFrame(render);
+		// 	MC.render(src);
+		//
+		// })();
+
+	</script>
+
+</body>
+</html>
