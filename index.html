@@ -13,19 +13,29 @@
 	<script>
 
 		var MC = new MediaCanvas(document.body.querySelector('.render'));
-		MC.addPass(MC.blurStackBox);
+		MC.addPass(0, MC.scale);
+		MC.addPass(1, MC.blurStackBox);
 
 		var img = new Image();
 		var src = img;
 
 		src.onload = function() {
-			MC.setSize(src.width, src.height);
-
+			MC.setSize(550, 550);
 			MC.render(src);
 
+			// Get dat mega pic!
+			src.onload = function() {
+
+				MC.removePass(1);
+
+				MC.render(src);
+			};
+			src.src = './jake.png';
 		}
 
-		src.src = './jake.png';
+		src.src = './jake_tiny.png';
+
+
 
 		// var video = document.createElement('video');
 		// video.autoplay = true;

@@ -26,8 +26,12 @@ MediaCanvas.prototype.setSize = function(width, height) {
 };
 
 
-MediaCanvas.prototype.addPass = function(pass) {
-  this.renderPasses.push(pass);
+MediaCanvas.prototype.addPass = function(id, pass) {
+  this.renderPasses[id] = pass;
+};
+
+MediaCanvas.prototype.removePass = function(id) {
+  delete this.renderPasses[id];
 };
 
 // Present to the presentation canvas
@@ -50,9 +54,9 @@ MediaCanvas.prototype.render = function(img) {
   this.renderImagePass(img, this.bufferCtx);
 
   // render everything to the buffer
-  this.renderPasses.forEach(function(pass){
+  Object.keys(this.renderPasses).forEach(function(passKey){
 
-    pass(this.buffer, this.bufferCtx, this.buffer.width, this.buffer.height);
+    this.renderPasses[passKey](this.buffer, this.bufferCtx, this.buffer.width, this.buffer.height);
 
   }.bind(this));
 
@@ -62,9 +66,14 @@ MediaCanvas.prototype.render = function(img) {
 
 // -------- Preset passes ---------
 
+MediaCanvas.prototype.scale = function(img, ctx) {
+
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+};
 
 MediaCanvas.prototype.renderImagePass = function(img, ctx) {
-  ctx.drawImage(img, 0, 0);
+  ctx.drawImage(img, 0, 0, this.buffer.width, this.buffer.height);
 };
 
 MediaCanvas.prototype.redify = function(img, ctx) {
@@ -80,6 +89,7 @@ MediaCanvas.prototype.redify = function(img, ctx) {
 
   ctx.putImageData( imageData, 0, 0 );
 };
+
 var mul_table = [
   512,512,456,512,328,456,335,512,405,328,271,456,388,335,292,512,
   454,405,364,328,298,271,496,456,420,388,360,335,312,292,273,512,
@@ -128,7 +138,12 @@ MediaCanvas.prototype.blurStackBox = function(img, ctx, width, height) {
     this.a = 0;
     this.next = null;
   }
-  var radius = 5;
+  var radius = 50;
+
+  if (radius < 1) {
+    return;
+  }
+
 	radius |= 0;
 
 	var pixels = imageData.data;
