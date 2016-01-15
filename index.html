@@ -15,57 +15,56 @@
 
 		var MC = new MediaCanvas(document.body.querySelector('.render'));
 		MC.setSize(550, 550);
-		var scale = new PresetPasses.Scale(550, 550)
-		MC.addPass(0, scale);
-		var blur = new PresetPasses.blurStackBox(100);
-		MC.addPass('blur', blur);
+		// var blur = new PresetPasses.blurStackBox(25);
+		// MC.addPass('blur', blur);
+		// var redden = new PresetPasses.redify(150);
+		// MC.addPass('red', redden);
+		var laplace = new PresetPasses.LaplaceConvolution();
+		MC.addPass('laplace', laplace);
+		var bright = new PresetPasses.Brighten(50);
+		MC.addPass('bright', bright);
 
-		function blurKill(){
-			blur.radius -= 5;
-			if (blur.radius > 0) {
-				this.setTimeout(blurKill);
-			} else {
-				MC.removePass('blur');
-			}
-			MC.render(src);
-		}
-
-		var img = new Image();
-		var src = img;
-
-		src.onload = function() {
-			MC.render(src);
-
-			// Get dat mega pic!
-			src.onload = function() {
-				blurKill();
-			};
-			src.src = './jake.png';
-		}
-
-		src.src = './jake_tiny.png';
-
-
-
-		// var video = document.createElement('video');
-		// video.autoplay = true;
-		// video.loop = true;
+		// function blurKill(){
+		// 	MC.removePass('blur');
+		// 	MC.render(src);
+		// }
 		//
-		// var src = video;
-		// src.src = './light-face.webm';
+		// var img = new Image();
+		// var src = img;
 		//
-		// document.body.appendChild(video);
-		// video.play();
-		// video.style.display = 'none';
-		//
-		// MC.setSize(440, 248);
-		//
-		// (function render() {
-		//
-		// 	window.requestAnimationFrame(render);
+		// src.onload = function() {
 		// 	MC.render(src);
 		//
-		// })();
+		// 	// Get dat mega pic!
+		// 	src.onload = function() {
+		// 		blurKill();
+		// 	};
+		// 	src.src = './jake.png';
+		// }
+		//
+		// src.src = './jake_tiny.png';
+
+
+
+		var video = document.createElement('video');
+		video.autoplay = true;
+		video.loop = true;
+
+		var src = video;
+		src.src = './light-face.webm';
+
+		document.body.appendChild(video);
+		video.play();
+		video.style.display = 'none';
+
+		MC.setSize(440, 248);
+
+		(function render() {
+
+			window.requestAnimationFrame(render);
+			MC.render(src);
+
+		})();
 
 	</script>
 

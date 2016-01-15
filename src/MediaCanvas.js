@@ -35,12 +35,12 @@ MediaCanvas.prototype.removePass = function(id) {
 };
 
 // Present to the presentation canvas
-MediaCanvas.prototype.renderToCanvas = function() {
+MediaCanvas.prototype.renderToCanvas = function(imgData) {
 
   // clear canvas
   this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-  var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
+  //var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
 
   this.canvasCtx.putImageData(imgData, 0, 0);
 
@@ -50,15 +50,16 @@ MediaCanvas.prototype.render = function(img) {
 
   //this.reqId = window.requestAnimationFrame(this.render);
   this.bufferCtx.drawImage(img, 0, 0, this.buffer.width, this.buffer.height);
+  var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
 
   // render everything to the buffer
   Object.keys(this.renderPasses).forEach(function(passKey){
 
-    this.renderPasses[passKey].render(this.buffer, this.bufferCtx, this.buffer.width, this.buffer.height);
+    this.renderPasses[passKey].render(imgData, this.bufferCtx, this.buffer.width, this.buffer.height);
 
   }.bind(this));
 
-  this.renderToCanvas();
+  this.renderToCanvas(imgData);
 };
 
 window.MediaCanvas = MediaCanvas;
