@@ -12,16 +12,19 @@ function MediaCanvas(canvas, buffer) {
   this.buffer = buffer || document.createElement('canvas');
   this.bufferCtx = this.buffer.getContext('2d');
 
+  this.setSize(this.canvas.width, this.canvas.height);
+
   this.renderPasses = [];
 
   // render loop handle
   this.reqId = null;
 }
 
+// set the size of the back buffer
 MediaCanvas.prototype.setSize = function(width, height) {
 
-  this.canvas.width = this.buffer.width = width;
-  this.canvas.height = this.buffer.height = height;
+  this.buffer.width = width;
+  this.buffer.height = height;
 
 };
 
@@ -42,17 +45,26 @@ MediaCanvas.prototype.removePass = function(id) {
 // Present to the presentation canvas
 MediaCanvas.prototype.renderToCanvas = function(imgData) {
 
+  //need to render into canvas, so we can easily scale it into the presentation buffer!
+  this.bufferCtx.putImageData(imgData, 0, 0);
   // clear canvas
   this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-  this.canvasCtx.putImageData(imgData, 0, 0);
+  this.canvasCtx.drawImage(this.buffer, 0, 0, this.canvas.width, this.canvas.height);
 
 };
 
-MediaCanvas.prototype.render = function(img) {
+MediaCanvas.prototype.renderImage = function(image) {
 
-  //this.reqId = window.requestAnimationFrame(this.render);
-  this.bufferCtx.drawImage(img, 0, 0, this.buffer.width, this.buffer.height);
+  this.bufferCtx.drawImage(image, 0, 0, this.buffer.width, this.buffer.height);
   var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
+
+  this.render(imgData);
+
+};
+
+// Render an image to the canvas
+//
+MediaCanvas.prototype.render = function(imgData) {
 
   // render everything to the buffer
   this.renderPasses.forEach(function(pass){

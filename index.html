@@ -11,10 +11,10 @@
   <!-- Then manipulate image data and present it here! -->
 	<button onclick="killVideo();one()">Tiny Jake</button>
 	<button onclick="killVideo();two()">Shitty Jake</button>
-	<button onclick="killVideo();three()">Shitty Red Jake</button>
+	<button onclick="killVideo();three()">Shitty Red Blurred Jake</button>
 	<button onclick="killVideo();four()">FB Header Image</button>
 	<button onclick="killVideo();five();">Video -> Laplance -> Brighter!</button>
-  <canvas class="render" style="display:inherit"></canvas>
+  <canvas class="render" style="display:inherit" width="1024" height="768"></canvas>
 
 	<script>
 
@@ -22,41 +22,49 @@
 
 		// Just render an image! Easy peasy
 		function one() {
-			MC.setSize(225, 225);
 			var img = new Image();
 			var src = img;
 
 			src.onload = function() {
-				MC.render(src);
+				MC.canvas.width = img.width;
+				MC.canvas.height = img.height;
+				MC.setSize(img.width, img.height);
+				MC.renderImage(src);
 			}
 			src.src = './jake_tiny.png';
 		};
 
 
-		//Okay, we're getting cray up in here, let's blur this shit
+		//Okay, we're getting cray up in here, let's scale that image up
 		function two() {
-			MC.setSize(550, 550);
+			MC.canvas.width = 500;
+			MC.canvas.height = 500;
+			MC.setSize(10, 10);
 
 			var img = new Image();
 			var src = img;
 
 			src.onload = function() {
-				MC.render(src);
+				MC.renderImage(src);
 			}
 			src.src = './jake_tiny.png';
 		};
 
 		//Okay, we're getting cray up in here, let's blur this shit
 		function three() {
-			MC.setSize(550, 550);
+			MC.canvas.width = 500;
+			MC.canvas.height = 500;
+			MC.setSize(10, 10);
 
 			var img = new Image();
 			var src = img;
 
 			src.onload = function() {
 				MC.addPass('redden', new PresetPasses.Redden(100));
-				MC.render(src);
+				MC.addPass('blur_pass', new PresetPasses.blurStackBox(1));
+				MC.renderImage(src);
 				MC.removePass('redden');
+				MC.removePass('blur_pass');
 			}
 			src.src = './jake_tiny.png';
 		};
@@ -64,7 +72,8 @@
 		// A real world application: FB Style Header Image Loading
 		// A 1Kb image, replaced by a 3Mb image
 		function four() {
-
+			MC.canvas.width = 768;
+			MC.canvas.height = 1024;
 			MC.setSize(768, 1024);
 			MC.addPass('blur_pass', new PresetPasses.blurStackBox(50));
 
@@ -72,11 +81,11 @@
 			var src = img;
 
 			src.onload = function() {
-				MC.render(src);
+				MC.renderImage(src);
 				MC.removePass('blur_pass');
 
 				src.onload = function() {
-					MC.render(src);
+					MC.renderImage(src);
 				};
 				src.src = './header-big.jpg';
 			}
@@ -97,6 +106,8 @@
 			document.body.appendChild(video);
 			video.play();
 
+			MC.canvas.width = 880;
+			MC.canvas.height = 496;
 			MC.setSize(440, 248);
 
 			window.setTimeout(function() {
@@ -113,7 +124,7 @@
 			(function render() {
 
 				reqHandle = window.requestAnimationFrame(render);
-				MC.render(src);
+				MC.renderImage(src);
 
 			})();
 		};
