@@ -3,7 +3,8 @@
 <head>
 	<meta charset="utf-8">
 	<title>Media Canvas</title>
-  <script src="./src/main.js"></script>
+  <script src="./src/MediaCanvas.js"></script>
+	<script src="./src/PresetPasses.js"></script>
 </head>
 
 <body>
@@ -13,22 +14,31 @@
 	<script>
 
 		var MC = new MediaCanvas(document.body.querySelector('.render'));
-		MC.addPass(0, MC.scale);
-		MC.addPass(1, MC.blurStackBox);
+		MC.setSize(550, 550);
+		var scale = new PresetPasses.Scale(550, 550)
+		MC.addPass(0, scale);
+		var blur = new PresetPasses.blurStackBox(100);
+		MC.addPass('blur', blur);
+
+		function blurKill(){
+			blur.radius -= 5;
+			if (blur.radius > 0) {
+				this.setTimeout(blurKill);
+			} else {
+				MC.removePass('blur');
+			}
+			MC.render(src);
+		}
 
 		var img = new Image();
 		var src = img;
 
 		src.onload = function() {
-			MC.setSize(550, 550);
 			MC.render(src);
 
 			// Get dat mega pic!
 			src.onload = function() {
-
-				MC.removePass(1);
-
-				MC.render(src);
+				blurKill();
 			};
 			src.src = './jake.png';
 		}
