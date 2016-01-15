@@ -9,62 +9,132 @@
 
 <body>
   <!-- Then manipulate image data and present it here! -->
-  <canvas class="render"></canvas>
+	<button onclick="killVideo();one()">Tiny Jake</button>
+	<button onclick="killVideo();two()">Shitty Jake</button>
+	<button onclick="killVideo();three()">Shitty Red Jake</button>
+	<button onclick="killVideo();four()">FB Header Image</button>
+	<button onclick="killVideo();five();">Video -> Laplance -> Brighter!</button>
+  <canvas class="render" style="display:inherit"></canvas>
 
 	<script>
 
 		var MC = new MediaCanvas(document.body.querySelector('.render'));
-		MC.setSize(550, 550);
-		// var blur = new PresetPasses.blurStackBox(25);
-		// MC.addPass('blur', blur);
-		// var redden = new PresetPasses.redify(150);
-		// MC.addPass('red', redden);
-		var laplace = new PresetPasses.LaplaceConvolution();
-		MC.addPass('laplace', laplace);
-		var bright = new PresetPasses.Brighten(50);
-		MC.addPass('bright', bright);
 
-		// function blurKill(){
-		// 	MC.removePass('blur');
-		// 	MC.render(src);
-		// }
-		//
-		// var img = new Image();
-		// var src = img;
-		//
-		// src.onload = function() {
-		// 	MC.render(src);
-		//
-		// 	// Get dat mega pic!
-		// 	src.onload = function() {
-		// 		blurKill();
-		// 	};
-		// 	src.src = './jake.png';
-		// }
-		//
-		// src.src = './jake_tiny.png';
+		// Just render an image! Easy peasy
+		function one() {
+			MC.setSize(225, 225);
+			var img = new Image();
+			var src = img;
+
+			src.onload = function() {
+				MC.render(src);
+			}
+			src.src = './jake_tiny.png';
+		};
 
 
+		//Okay, we're getting cray up in here, let's blur this shit
+		function two() {
+			MC.setSize(550, 550);
 
-		var video = document.createElement('video');
-		video.autoplay = true;
-		video.loop = true;
+			var img = new Image();
+			var src = img;
 
-		var src = video;
-		src.src = './light-face.webm';
+			src.onload = function() {
+				MC.render(src);
+			}
+			src.src = './jake_tiny.png';
+		};
 
-		document.body.appendChild(video);
-		video.play();
-		video.style.display = 'none';
+		//Okay, we're getting cray up in here, let's blur this shit
+		function three() {
+			MC.setSize(550, 550);
 
-		MC.setSize(440, 248);
+			var img = new Image();
+			var src = img;
 
-		(function render() {
+			src.onload = function() {
+				MC.addPass('redden', new PresetPasses.Redden(100));
+				MC.render(src);
+				MC.removePass('redden');
+			}
+			src.src = './jake_tiny.png';
+		};
 
-			window.requestAnimationFrame(render);
-			MC.render(src);
+		// A real world application: FB Style Header Image Loading
+		// A 1Kb image, replaced by a 3Mb image
+		function four() {
 
-		})();
+			MC.setSize(768, 1024);
+			MC.addPass('blur_pass', new PresetPasses.blurStackBox(50));
+
+			var img = new Image();
+			var src = img;
+
+			src.onload = function() {
+				MC.render(src);
+				MC.removePass('blur_pass');
+
+				src.onload = function() {
+					MC.render(src);
+				};
+				src.src = './header-big.jpg';
+			}
+			src.src = './header-tiny.jpg';
+
+
+		};
+
+		// Okay, that was fun! Now let's show video
+		function five() {
+			var video = document.body.querySelector('video') || document.createElement('video');
+			video.autoplay = true;
+			video.loop = true;
+
+			var src = video;
+			src.src = './light-face.webm';
+
+			document.body.appendChild(video);
+			video.play();
+
+			MC.setSize(440, 248);
+
+			window.setTimeout(function() {
+				MC.addPass('laplace', new PresetPasses.LaplaceConvolution());
+
+				// This is too dark! Let's brighten it!
+				window.setTimeout(function(){
+					MC.addPass('brighten', new PresetPasses.Brighten(50));
+					MC.addPass('contrast', new PresetPasses.Contrast(10));
+				}, 1000);
+
+			}, 1000);
+
+			(function render() {
+
+				reqHandle = window.requestAnimationFrame(render);
+				MC.render(src);
+
+			})();
+		};
+
+		var reqHandle = null;
+		function killVideo() {
+			if (reqHandle) {
+				window.cancelAnimationFrame(reqHandle);
+			}
+			var vid = document.body.querySelector('video');
+			if (!vid) {
+				return;
+			}
+
+			document.body.removeChild(vid);
+
+			// guard
+			MC.removePass('laplace');
+			MC.removePass('brighten');
+			MC.removePass('contrast');
+		}
 
 	</script>
 

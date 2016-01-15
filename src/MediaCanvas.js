@@ -27,11 +27,16 @@ MediaCanvas.prototype.setSize = function(width, height) {
 
 
 MediaCanvas.prototype.addPass = function(id, pass) {
-  this.renderPasses[id] = pass;
+
+  this.renderPasses.push({ id: id, pass: pass });
 };
 
 MediaCanvas.prototype.removePass = function(id) {
-  delete this.renderPasses[id];
+
+  this.renderPasses = this.renderPasses.filter(function(pass){
+    return pass.id !== id;
+  });
+
 };
 
 // Present to the presentation canvas
@@ -39,9 +44,6 @@ MediaCanvas.prototype.renderToCanvas = function(imgData) {
 
   // clear canvas
   this.canvasCtx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-
-  //var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
-
   this.canvasCtx.putImageData(imgData, 0, 0);
 
 };
@@ -53,9 +55,9 @@ MediaCanvas.prototype.render = function(img) {
   var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
 
   // render everything to the buffer
-  Object.keys(this.renderPasses).forEach(function(passKey){
+  this.renderPasses.forEach(function(pass){
 
-    this.renderPasses[passKey].render(imgData, this.bufferCtx, this.buffer.width, this.buffer.height);
+    pass.pass.render(imgData, this.bufferCtx, this.buffer.width, this.buffer.height);
 
   }.bind(this));
 

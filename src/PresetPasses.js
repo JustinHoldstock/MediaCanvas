@@ -11,7 +11,7 @@ PresetPasses.Brighten = function (amount) {
         len = data.length,
         i = 0;
 
-    for (i; i < len; i += 4) {
+    for (; i < len; i += 4) {
       data[i] += amount;
       data[i + 1] += amount;
       data[i + 2] += amount;
@@ -19,24 +19,39 @@ PresetPasses.Brighten = function (amount) {
     }
 
   };
-
 };
 
-PresetPasses.redify = function(red) {
+PresetPasses.Redden = function (amount) {
 
-  this.red = red;
+  this.amount = amount;
   this.render = function(imgData, ctx) {
 
-    var data = imgData.data;
-    var length = data.length,
+    var data = imgData.data,
+        len = data.length,
         i = 0;
 
-    for (i; i < length; i += 4) {
-      imgData.data[i] = this.red;
+    for (; i < len; i += 4) {
+      data[i] += amount;
     }
 
   };
+};
 
+PresetPasses.Contrast = function(factor) {
+
+  this.factor = (259 * (factor + 255)) / (255 * (259 - factor));
+
+  this.render = function(imgData, ctx) {
+    var data = imgData.data,
+        length = data.length,
+        i = 0;
+
+    for (; i < length; i += 4) {
+        data[i] = this.factor * (data[i] - 128) + 128;
+        data[i+1] = this.factor * (data[i+1] - 128) + 128;
+        data[i+2] = this.factor * (data[i+2] - 128) + 128;
+    }
+  };
 };
 
 var laplaceKernel = [
