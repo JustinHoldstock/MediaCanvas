@@ -55,6 +55,7 @@ MediaCanvas.prototype.renderToCanvas = function(imgData) {
 
 MediaCanvas.prototype.renderImage = function(image) {
 
+  this.bufferCtx.clearRect(0, 0, this.buffer.width, this.buffer.height);
   this.bufferCtx.drawImage(image, 0, 0, this.buffer.width, this.buffer.height);
   var imgData = this.bufferCtx.getImageData(0, 0, this.buffer.width, this.buffer.height);
 
