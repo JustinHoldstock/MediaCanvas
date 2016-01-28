@@ -1,153 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Media Canvas</title>
+  <meta charset="utf-8">
+  <title>Media Canvas</title>
   <script src="./src/MediaCanvas.js"></script>
-	<script src="./src/PresetPasses.js"></script>
+  <script src="./src/PresetPasses.js"></script>
 </head>
 
 <body>
   <!-- Then manipulate image data and present it here! -->
-	<button onclick="killVideo();one()">Tiny Jake</button>
-	<button onclick="killVideo();two()">Shitty Jake</button>
-	<button onclick="killVideo();three()">Shitty Red Blurred Jake</button>
-	<button onclick="killVideo();four()">FB Header Image</button>
-	<button onclick="killVideo();five();">Video -> Laplance -> Brighter!</button>
+  <button onclick="killVideo();one()">Tiny Jake</button>
+  <button onclick="killVideo();two()">Shitty Jake</button>
+  <button onclick="killVideo();three()">Shitty Red Blurred Jake</button>
+  <button onclick="killVideo();four()">FB Header Image</button>
+  <button onclick="killVideo();five();">Video -> Laplace -> Brighter!</button>
   <canvas class="render" style="display:inherit" width="1024" height="768"></canvas>
 
-	<script>
+  <script>
 
-		var MC = new MediaCanvas(document.body.querySelector('.render'));
+    var MC = new MediaCanvas(document.body.querySelector('.render'));
 
-		// Just render an image! Easy peasy
-		function one() {
-			var img = new Image();
-			var src = img;
+    // Just render an image! Easy peasy
+    function one() {
+      var img = new Image();
+      var src = img;
 
-			src.onload = function() {
-				MC.canvas.width = img.width;
-				MC.canvas.height = img.height;
-				MC.setSize(img.width, img.height);
-				MC.renderImage(src);
-			}
-			src.src = './jake_tiny.png';
-		};
-
-
-		//Okay, we're getting cray up in here, let's scale that image up
-		function two() {
-			MC.canvas.width = 500;
-			MC.canvas.height = 500;
-			MC.setSize(10, 10);
-
-			var img = new Image();
-			var src = img;
-
-			src.onload = function() {
-				MC.renderImage(src);
-			}
-			src.src = './jake_tiny.png';
-		};
-
-		//Okay, we're getting cray up in here, let's blur this shit
-		function three() {
-			MC.canvas.width = 500;
-			MC.canvas.height = 500;
-			MC.setSize(10, 10);
-
-			var img = new Image();
-			var src = img;
-
-			src.onload = function() {
-				MC.addPass('redden', new PresetPasses.Redden(100));
-				MC.addPass('blur_pass', new PresetPasses.blurStackBox(1));
-				MC.renderImage(src);
-				MC.removePass('redden');
-				MC.removePass('blur_pass');
-			}
-			src.src = './jake_tiny.png';
-		};
-
-		// A real world application: FB Style Header Image Loading
-		// A 1Kb image, replaced by a 3Mb image
-		function four() {
-			MC.canvas.width = 768;
-			MC.canvas.height = 1024;
-			MC.setSize(768, 1024);
-			MC.addPass('blur_pass', new PresetPasses.blurStackBox(50));
-
-			var img = new Image();
-			var src = img;
-
-			src.onload = function() {
-				MC.renderImage(src);
-				MC.removePass('blur_pass');
-
-				src.onload = function() {
-					MC.renderImage(src);
-				};
-				src.src = './header-big.jpg';
-			}
-			src.src = './header-tiny.jpg';
+      src.onload = function() {
+        MC.canvas.width = img.width;
+        MC.canvas.height = img.height;
+        MC.setSize(img.width, img.height);
+        MC.renderImage(src);
+      }
+      src.src = './jake_tiny.png';
+    };
 
 
-		};
+    //Okay, we're getting cray up in here, let's scale that image up
+    function two() {
+      MC.canvas.width = 500;
+      MC.canvas.height = 500;
+      MC.setSize(10, 10);
 
-		// Okay, that was fun! Now let's show video
-		function five() {
-			var video = document.body.querySelector('video') || document.createElement('video');
-			video.autoplay = true;
-			video.loop = true;
+      var img = new Image();
+      var src = img;
 
-			var src = video;
-			src.src = './light-face.webm';
+      src.onload = function() {
+        MC.renderImage(src);
+      }
+      src.src = './jake_tiny.png';
+    };
 
-			document.body.appendChild(video);
-			video.play();
+    //Okay, we're getting cray up in here, let's blur this shit
+    function three() {
+      MC.canvas.width = 500;
+      MC.canvas.height = 500;
+      MC.setSize(10, 10);
 
-			MC.canvas.width = 880;
-			MC.canvas.height = 496;
-			MC.setSize(440, 248);
+      var img = new Image();
+      var src = img;
 
-			window.setTimeout(function() {
-				MC.addPass('laplace', new PresetPasses.LaplaceConvolution());
+      src.onload = function() {
+        MC.addPass('redden', new PresetPasses.Redden(100));
+        MC.addPass('blur_pass', new PresetPasses.blurStackBox(1));
+        MC.renderImage(src);
+        MC.removePass('redden');
+        MC.removePass('blur_pass');
+      }
+      src.src = './jake_tiny.png';
+    };
 
-				// This is too dark! Let's brighten it!
-				window.setTimeout(function(){
-					MC.addPass('brighten', new PresetPasses.Brighten(50));
-					MC.addPass('contrast', new PresetPasses.Contrast(10));
-				}, 1000);
+    // A real world application: FB Style Header Image Loading
+    // A 1Kb image, replaced by a 3Mb image
+    function four() {
+      MC.canvas.width = 768;
+      MC.canvas.height = 1024;
+      MC.setSize(768, 1024);
+      MC.addPass('blur_pass', new PresetPasses.blurStackBox(50));
 
-			}, 1000);
+      var img = new Image();
+      var src = img;
 
-			(function render() {
+      src.onload = function() {
+        MC.renderImage(src);
+        MC.removePass('blur_pass');
 
-				reqHandle = window.requestAnimationFrame(render);
-				MC.renderImage(src);
+        src.onload = function() {
+          MC.renderImage(src);
+        };
+        src.src = './header-big.jpg';
+      }
+      src.src = './header-tiny.jpg';
 
-			})();
-		};
 
-		var reqHandle = null;
-		function killVideo() {
-			if (reqHandle) {
-				window.cancelAnimationFrame(reqHandle);
-			}
-			var vid = document.body.querySelector('video');
-			if (!vid) {
-				return;
-			}
+    };
 
-			document.body.removeChild(vid);
+    // Okay, that was fun! Now let's show video
+    function five() {
+      var video = document.body.querySelector('video') || document.createElement('video');
+      video.autoplay = true;
+      video.loop = true;
 
-			// guard
-			MC.removePass('laplace');
-			MC.removePass('brighten');
-			MC.removePass('contrast');
-		}
+      var src = video;
+      src.src = './light-face.webm';
 
-	</script>
+      document.body.appendChild(video);
+      video.play();
+
+      MC.canvas.width = 880;
+      MC.canvas.height = 496;
+      MC.setSize(440, 248);
+
+      window.setTimeout(function() {
+        MC.addPass('laplace', new PresetPasses.LaplaceConvolution());
+
+        // This is too dark! Let's brighten it!
+        window.setTimeout(function(){
+          MC.addPass('brighten', new PresetPasses.Brighten(50));
+          MC.addPass('contrast', new PresetPasses.Contrast(10));
+        }, 1000);
+
+      }, 1000);
+
+      (function render() {
+
+        reqHandle = window.requestAnimationFrame(render);
+        MC.renderImage(src);
+
+      })();
+    };
+
+    var reqHandle = null;
+    function killVideo() {
+      if (reqHandle) {
+        window.cancelAnimationFrame(reqHandle);
+      }
+      var vid = document.body.querySelector('video');
+      if (!vid) {
+        return;
+      }
+
+      document.body.removeChild(vid);
+
+      // guard
+      MC.removePass('laplace');
+      MC.removePass('brighten');
+      MC.removePass('contrast');
+    }
+
+  </script>
 
 </body>
 </html>
